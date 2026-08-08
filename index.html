@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>睡眠・活動ダイアリー</title>
+<meta name="theme-color" content="#2f6f6f" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="app-header">
+  <h1>睡眠・活動ダイアリー</h1>
+  <p>睡眠の質と疲労度の関係を見える化</p>
+</header>
+
+<main>
+
+  <div class="install-banner" id="installBanner">
+    <span>ホーム画面に追加してアプリのように使えます</span>
+    <button id="installBtn">追加</button>
+  </div>
+
+  <!-- ============ 記録タブ ============ -->
+  <section class="tab-panel active" id="tab-record">
+    <form id="entryForm">
+
+      <div class="card">
+        <h2>📅 日付</h2>
+        <div class="field">
+          <input type="date" id="f-date" required />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🛏 就床・起床</h2>
+        <div class="row2">
+          <div class="field">
+            <label>就寝時刻</label>
+            <input type="time" id="f-bedtime" />
+          </div>
+          <div class="field">
+            <label>起床時刻</label>
+            <input type="time" id="f-waketime" />
+          </div>
+        </div>
+        <div class="computed-line">
+          <span>床上時間</span>
+          <strong id="timeInBedOut">-</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⌚ 睡眠ステージ</h2>
+        <p class="hint">スマートウォッチのアプリに表示された値をそのまま入力してください。</p>
+
+        <div class="stage-row">
+          <span class="stage-label"><i class="sdot deep"></i>深い睡眠</span>
+          <input type="number" id="f-deep-h" min="0" max="24" placeholder="0" /><span class="unit">時間</span>
+          <input type="number" id="f-deep-m" min="0" max="59" placeholder="0" /><span class="unit">分</span>
+        </div>
+
+        <div class="stage-row">
+          <span class="stage-label"><i class="sdot light"></i>浅い睡眠</span>
+          <input type="number" id="f-light-h" min="0" max="24" placeholder="0" /><span class="unit">時間</span>
+          <input type="number" id="f-light-m" min="0" max="59" placeholder="0" /><span class="unit">分</span>
+        </div>
+
+        <div class="stage-row">
+          <span class="stage-label"><i class="sdot rem"></i>レム睡眠</span>
+          <input type="number" id="f-rem-h" min="0" max="24" placeholder="0" /><span class="unit">時間</span>
+          <input type="number" id="f-rem-m" min="0" max="59" placeholder="0" /><span class="unit">分</span>
+        </div>
+
+        <div class="field" style="margin:12px 0 0;">
+          <label>目が覚めた回数(中途覚醒)</label>
+          <input type="number" id="f-awakenings" min="0" step="1" placeholder="0" />
+        </div>
+
+        <div class="computed-line highlight">
+          <span>実睡眠時間(中途覚醒を除く)</span>
+          <strong id="actualSleepOut">-</strong>
+        </div>
+        <div class="computed-line">
+          <span>睡眠効率</span>
+          <strong id="efficiencyOut">-</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔋 疲労度・体調</h2>
+        <div class="field">
+          <label>疲労度(1=疲労なし 〜 5=非常に疲れている)</label>
+          <div class="scale" data-target="f-fatigue">
+            <button type="button" data-val="1">1</button>
+            <button type="button" data-val="2">2</button>
+            <button type="button" data-val="3">3</button>
+            <button type="button" data-val="4">4</button>
+            <button type="button" data-val="5">5</button>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>体調(1=とても良い 〜 5=とても悪い)</label>
+          <div class="scale" data-target="f-condition">
+            <button type="button" data-val="1">1</button>
+            <button type="button" data-val="2">2</button>
+            <button type="button" data-val="3">3</button>
+            <button type="button" data-val="4">4</button>
+            <button type="button" data-val="5">5</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>💊 睡眠薬</h2>
+        <div class="field">
+          <label>内服したか</label>
+          <div class="scale" data-target="f-medtaken">
+            <button type="button" data-val="0">いいえ</button>
+            <button type="button" data-val="1">はい</button>
+          </div>
+        </div>
+        <div class="field" id="medNameField" style="margin-bottom:0; display:none;">
+          <label>薬剤名</label>
+          <input type="text" id="f-medname" list="medNameOptions" placeholder="例: マイスリー" />
+          <datalist id="medNameOptions">
+            <option value="マイスリー"></option>
+            <option value="ルネスタ"></option>
+            <option value="ロゼレム"></option>
+            <option value="ベルソムラ"></option>
+            <option value="デエビゴ"></option>
+            <option value="レンドルミン"></option>
+            <option value="ハルシオン"></option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="card star-card">
+        <h2>☆</h2>
+        <button type="button" class="star-toggle" id="starToggle" data-active="false">☆</button>
+      </div>
+
+      <div class="card">
+        <h2>☕ カフェイン・アルコール</h2>
+        <div class="row2">
+          <div class="field">
+            <label>カフェイン(杯)</label>
+            <input type="number" id="f-caffeine" min="0" step="1" placeholder="0" />
+          </div>
+          <div class="field">
+            <label>アルコール(杯)</label>
+            <input type="number" id="f-alcohol" min="0" step="1" placeholder="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📝 メモ</h2>
+        <div class="field" style="margin-bottom:0;">
+          <textarea id="f-memo" placeholder="気づいたことがあれば"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="saveBtn">この日の記録を保存</button>
+    </form>
+  </section>
+
+  <!-- ============ 履歴タブ ============ -->
+  <section class="tab-panel" id="tab-history">
+    <div class="card">
+      <h2>💾 バックアップ</h2>
+      <p class="hint">データは端末内(ブラウザ)にのみ保存されます。機種変更やブラウザデータ消去に備えて、定期的にエクスポートしておくことをおすすめします。</p>
+      <div class="row2">
+        <button type="button" class="btn secondary" id="exportBtn">📤 エクスポート</button>
+        <button type="button" class="btn secondary" id="importBtn">📥 インポート</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;" />
+    </div>
+    <div class="card">
+      <h2>📖 記録履歴</h2>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <!-- ============ 分析タブ ============ -->
+  <section class="tab-panel" id="tab-analysis">
+
+    <div class="card">
+      <h2>📊 概要</h2>
+      <div class="stat-grid" id="statGrid"></div>
+    </div>
+
+    <div class="card">
+      <h2>📈 時系列(実睡眠時間・疲労度)</h2>
+      <div class="chart-wrap" id="timeSeriesChart"></div>
+      <div class="legend">
+        <span><span class="dot" style="background:#4fb3a9;"></span>実睡眠時間(h)</span>
+        <span><span class="dot" style="background:#f2b155;"></span>疲労度(1-5)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🌙 睡眠ステージの内訳</h2>
+      <div class="chart-wrap" id="stageChart"></div>
+      <div class="legend">
+        <span><span class="dot" style="background:#7c4dff;"></span>深い睡眠</span>
+        <span><span class="dot" style="background:#c964e0;"></span>浅い睡眠</span>
+        <span><span class="dot" style="background:#ff8a80;"></span>レム睡眠</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔗 相関分析</h2>
+      <div class="select-tabs" id="corrTabs">
+        <button data-pair="sleep_fatigue" class="active">実睡眠時間 × 疲労度</button>
+        <button data-pair="deep_fatigue">深い睡眠 × 疲労度</button>
+        <button data-pair="light_fatigue">浅い睡眠 × 疲労度</button>
+        <button data-pair="rem_fatigue">レム睡眠 × 疲労度</button>
+        <button data-pair="awaken_fatigue">中途覚醒回数 × 疲労度</button>
+        <button data-pair="efficiency_fatigue">睡眠効率 × 疲労度</button>
+        <button data-pair="deep_condition">深い睡眠 × 体調</button>
+        <button data-pair="med_sleep">睡眠薬 × 実睡眠時間</button>
+        <button data-pair="med_deep">睡眠薬 × 深い睡眠</button>
+        <button data-pair="caffeine_sleep">カフェイン × 実睡眠時間</button>
+        <button data-pair="alcohol_sleep">アルコール × 実睡眠時間</button>
+        <button data-pair="alcohol_deep">アルコール × 深い睡眠</button>
+        <button data-pair="caffeine_fatigue_next">前日カフェイン × 翌日疲労度</button>
+        <button data-pair="alcohol_fatigue_next">前日アルコール × 翌日疲労度</button>
+        <button data-pair="star_fatigue">☆ × 疲労度</button>
+        <button data-pair="star_fatigue_next">前日☆ × 翌日疲労度</button>
+        <button data-pair="star_deep">☆ × 深い睡眠</button>
+      </div>
+      <div class="chart-wrap" id="scatterChart"></div>
+      <div class="corr-result">
+        <div>
+          <div class="corr-label" id="corrPairLabel">-</div>
+          <div class="corr-value" id="corrValue">-</div>
+        </div>
+        <div class="corr-tag" id="corrTag">-</div>
+      </div>
+      <p class="hint" id="corrHint"></p>
+    </div>
+
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <button class="nav-btn active" data-tab="tab-record"><span class="ic">✏️</span>記録</button>
+  <button class="nav-btn" data-tab="tab-history"><span class="ic">📖</span>履歴</button>
+  <button class="nav-btn" data-tab="tab-analysis"><span class="ic">📊</span>分析</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

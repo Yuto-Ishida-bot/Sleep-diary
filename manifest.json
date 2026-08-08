@@ -1,0 +1,25 @@
+{
+  "name": "睡眠・活動ダイアリー",
+  "short_name": "睡眠日記",
+  "description": "日々の睡眠・活動・疲労度を記録し、相関を分析するダイアリー",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101820",
+  "theme_color": "#2f6f6f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
